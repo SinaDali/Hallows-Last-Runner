@@ -1,20 +1,5 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+Fan Game For HollowsNFT
 
-# Run and deploy your AI Studio app
+I Created this in 12 Days with Some helps From AI because of BUGs and Characters Codes.
 
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/1d79703d-2385-4cc1-9fa3-1ec93158f5f8
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+its my about first time to creating fan game for a project, i want to show my passion and love to HollowsNFT by Its Ali
