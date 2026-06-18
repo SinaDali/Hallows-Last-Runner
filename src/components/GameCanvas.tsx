@@ -102,16 +102,35 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     { x: 400, y: 540, color: '#2dd4bf' },
   ];
 
+  // Callback and prop stable references
+  const onGameUpdateRef = useRef(onGameUpdate);
+  const onGameOverRef = useRef(onGameOver);
+  const isMutedRef = useRef(isMuted);
+
+  useEffect(() => {
+    onGameUpdateRef.current = onGameUpdate;
+  }, [onGameUpdate]);
+
+  useEffect(() => {
+    onGameOverRef.current = onGameOver;
+  }, [onGameOver]);
+
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
   // Cache user custom image
-  const [userImg, setUserImg] = useState<HTMLImageElement | null>(null);
+  const userImgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     if (userSprite) {
       const img = new Image();
       img.src = userSprite;
-      img.onload = () => setUserImg(img);
+      img.onload = () => {
+        userImgRef.current = img;
+      };
     } else {
-      setUserImg(null);
+      userImgRef.current = null;
     }
   }, [userSprite]);
 
@@ -171,7 +190,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       waveSpawnedRef.current = 0;
       waveSpawnTotalRef.current = 8 + w * 5; // ramp enemy headcount incrementally
       
-      if (!isMuted) {
+      if (!isMutedRef.current) {
         globalSynth.playWaveComplete();
       }
       
@@ -227,7 +246,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       const player = playerRef.current;
       player.specialCharge = 0;
       
-      if (!isMuted) {
+      if (!isMutedRef.current) {
         globalSynth.playSpecial();
       }
       
@@ -285,7 +304,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       if (player.hp <= 0 && gameActive) {
         gameActive = false;
         clearInterval(intervalId);
-        onGameOver({
+        onGameOverRef.current({
           score: scoreRef.current,
           wave: waveRef.current,
           enemiesDefeated: enemiesDefeatedRef.current,
@@ -362,7 +381,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         player.attackCooldown = 20; // attack speed delay rate
         player.moveState = 'attack';
 
-        if (!isMuted) {
+        if (!isMutedRef.current) {
           globalSynth.playSlash();
         }
 
@@ -559,7 +578,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           player.hp -= dmg;
           player.invincibilityFrames = 50; // frames
           
-          if (!isMuted) {
+          if (!isMutedRef.current) {
             globalSynth.playPlayerDamage();
           }
 
@@ -602,7 +621,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
               en.vx += Math.cos(angle) * 1.5;
               en.vy += Math.sin(angle) * 1.5;
 
-              if (!isMuted) {
+              if (!isMutedRef.current) {
                 globalSynth.playHit();
               }
 
@@ -647,7 +666,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             player.hp -= p.damage;
             player.invincibilityFrames = 50;
 
-            if (!isMuted) {
+            if (!isMutedRef.current) {
               globalSynth.playPlayerDamage();
             }
 
@@ -684,7 +703,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         if (dist < player.radius + col.radius && gameActive) {
           col.radius = 0; // mark collected
           
-          if (!isMuted) {
+          if (!isMutedRef.current) {
             globalSynth.playCollect();
           }
 
@@ -885,7 +904,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       // Render in depth y order
       sortedQueue.forEach((item) => {
         if (item.type === 'player') {
-          if (userImg) {
+          if (userImgRef.current) {
             // Draw uploaded Hollow character image bobbing
             const bob = Math.sin(tick * 0.12) * 2;
             ctx.save();
@@ -895,7 +914,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
             }
             
             // Draw custom sprite
-            ctx.drawImage(userImg, -28, -36, 56, 72);
+            ctx.drawImage(userImgRef.current, -28, -36, 56, 72);
 
             // If taking damage, flash red overlay
             if (player.invincibilityFrames > 0 && Math.floor(tick / 4) % 2 === 0) {
@@ -1059,7 +1078,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
       // Dispatch state updates to HTML HUD at moderated frequency (once per 12 frames)
       if (tick % 12 === 0) {
-        onGameUpdate({
+        onGameUpdateRef.current({
           score: scoreRef.current,
           hp: player.hp,
           specialGauge: player.specialCharge,
@@ -1089,7 +1108,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [userImg, onGameUpdate, onGameOver, isMuted]);
+  }, []);
 
   return (
     <div id="canvas-container" className="relative border-4 border-zinc-900 bg-zinc-950 rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center max-w-[808px] w-full max-h-[608px] h-full" style={{ aspectRatio: '4/3' }}>
