@@ -1,0 +1,6 @@
+{
+  "name": "Hollow's Last Stand",
+  "description": "An action-packed retro pixel art top-down wave-defense game for the Hollows NFT project.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
