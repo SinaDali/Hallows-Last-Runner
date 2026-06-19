@@ -1,13 +1,79 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Twitter, UploadCloud, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Twitter, UploadCloud, Volume2, VolumeX, Sparkles, Shield, Bookmark } from 'lucide-react';
 import { drawKingHollow } from '../utils/graphics';
 import { globalSynth } from '../sound';
+
+// Imported generated pixel-art assets
+import logoHat from '../assets/images/logo_hat_1781822726369.jpg';
+import nftLava from '../assets/images/nft_lava_1781822745289.jpg';
+import nftViking from '../assets/images/nft_viking_1781822756777.jpg';
+import nftRainbow from '../assets/images/nft_rainbow_1781822768707.jpg';
+import nftCat from '../assets/images/nft_cat_1781822780422.jpg';
+import nftPaperbag from '../assets/images/nft_paperbag_1781822789606.jpg';
 
 interface StartScreenProps {
   onStartGame: () => void;
   userSprite: string | null;
   onSpriteUpload: (dataUrl: string | null) => void;
 }
+
+const nfts = [
+  {
+    src: nftLava,
+    id: "#148",
+    name: "Lava Skull",
+    rarity: "LEGENDARY",
+    rarityColor: "text-orange-400 border-orange-500/40 bg-orange-950/30",
+    borderColor: "border-amber-500/60 shadow-amber-500/20",
+    pos: "top-[12%] left-[4%] lg:left-[5%]",
+    rotate: "-rotate-6 hover:-rotate-1",
+    delay: "0s"
+  },
+  {
+    src: nftViking,
+    id: "#892",
+    name: "Viking Hollow",
+    rarity: "RARE",
+    rarityColor: "text-cyan-400 border-cyan-500/40 bg-cyan-950/30",
+    borderColor: "border-cyan-500/50 shadow-cyan-500/20",
+    pos: "top-[14%] right-[4%] lg:right-[5%]",
+    rotate: "rotate-3 hover:rotate-6",
+    delay: "0.8s"
+  },
+  {
+    src: nftRainbow,
+    id: "#421",
+    name: "Cosmic Weeper",
+    rarity: "MYTHIC",
+    rarityColor: "text-purple-400 border-purple-500/40 bg-purple-950/30",
+    borderColor: "border-fuchsia-500/60 shadow-fuchsia-500/20",
+    pos: "bottom-[20%] left-[4%] lg:left-[5%]",
+    rotate: "rotate-6 hover:rotate-1",
+    delay: "1.5s"
+  },
+  {
+    src: nftCat,
+    id: "#904",
+    name: "Neko Hollow",
+    rarity: "EPIC",
+    rarityColor: "text-pink-400 border-pink-500/40 bg-pink-950/30",
+    borderColor: "border-pink-500/50 shadow-pink-500/20",
+    pos: "bottom-[16%] right-[4%] lg:right-[5%]",
+    rotate: "-rotate-3 hover:-rotate-6",
+    delay: "2.3s"
+  },
+  {
+    src: nftPaperbag,
+    id: "#773",
+    name: "Baggy Friend",
+    rarity: "UNCOMMON",
+    rarityColor: "text-emerald-400 border-emerald-500/40 bg-emerald-950/30",
+    borderColor: "border-emerald-500/40 shadow-emerald-500/10",
+    pos: "top-[48%] left-[2%] lg:left-[3%] hidden xl:block",
+    rotate: "-rotate-2 hover:rotate-2",
+    delay: "3.1s"
+  }
+];
 
 export const StartScreen: React.FC<StartScreenProps> = ({
   onStartGame,
@@ -329,18 +395,54 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       {/* Background canvas */}
       <canvas ref={bgCanvasRef} className="absolute inset-0 w-full h-full object-cover -z-10" />
 
+      {/* Floating Gallery NFTs around the page */}
+      {nfts.map((nft, idx) => (
+        <div
+          key={idx}
+          className={`absolute ${nft.pos} ${nft.rotate} retro-float transition-all duration-500 ease-out group pointer-events-auto z-10`}
+          style={{ animationDelay: nft.delay }}
+        >
+          {/* Main NFT container with glowing border */}
+          <div className={`relative p-1.5 rounded-xl border-2 ${nft.borderColor} bg-black/85 backdrop-blur-md shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 w-18 md:w-24 lg:w-28 flex flex-col gap-1 items-center`}>
+            {/* Aspect ratio frame for image */}
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
+              <img
+                src={nft.src}
+                alt={nft.name}
+                className="w-full h-full object-cover pointer-events-none select-none"
+                referrerPolicy="no-referrer"
+              />
+              {/* Corner token label */}
+              <div className="absolute top-0.5 left-0.5 bg-black/75 px-1 py-0.5 rounded text-[7px] font-bold text-yellow-400">
+                {nft.id}
+              </div>
+            </div>
+
+            {/* Title / Description */}
+            <div className="w-full text-center flex flex-col pointer-events-none">
+              <span className="text-[7px] md:text-[8px] font-bold truncate text-zinc-200">
+                {nft.name}
+              </span>
+              <span className={`text-[6px] font-extrabold uppercase py-0.5 px-1 rounded-xs border inline-block mt-0.5 ${nft.rarityColor}`}>
+                {nft.rarity}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
+
       {/* Top Header Actions */}
       <div id="top-row" className="w-full flex items-center justify-between z-20">
         <button
           id="btn-volume"
           onClick={toggleMute}
-          className="p-3 bg-zinc-900/85 border border-zinc-700/80 rounded-lg text-teal-400 hover:text-teal-300 hover:border-teal-500 transition-all flex items-center gap-2 text-sm max-sm:px-2 cursor-pointer shadow-lg active:scale-95"
+          className="p-3 bg-zinc-900/85 border border-zinc-700/80 rounded-lg text-teal-400 hover:text-teal-300 hover:border-teal-500 transition-all flex items-center gap-2 text-sm max-sm:px-2 cursor-pointer shadow-lg active:scale-95 z-30"
         >
           {isMuted ? <VolumeX className="w-5 h-5 text-red-500" /> : <Volume2 className="w-5 h-5 text-teal-400" />}
           <span className="hidden sm:inline font-bold uppercase tracking-wider">{isMuted ? 'Muted' : 'Audio On'}</span>
         </button>
 
-        <div id="author-tag" className="hidden md:flex flex-col items-end text-zinc-400 text-xs text-right">
+        <div id="author-tag" className="hidden md:flex flex-col items-end text-zinc-400 text-xs text-right cursor-default select-none">
           <span className="font-semibold text-zinc-500 uppercase tracking-widest text-[9px]">Dedicated project</span>
           <span className="text-teal-400 font-bold tracking-tight">Hollows NFT Fan game</span>
         </div>
@@ -351,14 +453,14 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             setShowHelp(!showHelp);
             if (!isMuted) globalSynth.playCollect();
           }}
-          className="px-4 py-2 border border-violet-500/50 bg-violet-950/70 hover:bg-violet-900/90 text-violet-300 text-xs uppercase font-bold tracking-widest rounded-md cursor-pointer transition-all active:scale-95"
+          className="px-4 py-2 border border-violet-500/50 bg-violet-950/70 hover:bg-violet-900/90 text-violet-300 text-xs uppercase font-bold tracking-widest rounded-md cursor-pointer transition-all active:scale-95 z-30"
         >
           {showHelp ? 'Hide Controls' : 'Show Manual'}
         </button>
       </div>
 
       {/* Central Screen Body */}
-      <div id="screen-body" className="flex flex-col items-center justify-center max-w-2xl text-center w-full my-auto transition-all duration-300">
+      <div id="screen-body" className="flex flex-col items-center justify-center max-w-2xl text-center w-full my-auto transition-all duration-300 z-25">
         {/* Title container */}
         <div id="title-holder" className="flex flex-col items-center gap-1.5 mb-5 select-none scale-100 relative">
           <div className="absolute -top-10 -left-10 text-teal-500 animate-pulse opacity-45">
@@ -366,6 +468,24 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           </div>
           <div className="absolute -bottom-6 -right-10 text-purple-500 animate-bounce opacity-40">
             <Sparkles className="w-6 h-6" />
+          </div>
+
+          {/* Central Logo Header */}
+          <div className="relative group flex flex-col items-center mb-1">
+            {/* Outer golden glowing rings */}
+            <div className="absolute -inset-1 px-4 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 rounded-3xl blur-md opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+            
+            <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-2xl border-4 border-yellow-400 bg-black overflow-hidden shadow-2xl transition-all duration-300 transform group-hover:scale-105">
+              <img 
+                src={logoHat} 
+                alt="Hollow Logo" 
+                className="w-full h-full object-cover select-none pointer-events-none" 
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-black/75 py-0.5 text-[7px] text-yellow-400 uppercase tracking-widest font-bold font-mono">
+                Official Logo
+              </div>
+            </div>
           </div>
 
           <h1 
