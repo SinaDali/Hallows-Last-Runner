@@ -391,7 +391,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-x-0 bottom-0 bg-black/75 py-0.5 text-[7px] text-yellow-400 uppercase tracking-widest font-bold font-mono">
-                Official Logo
+                BY iTs ALi
               </div>
             </div>
           </div>
